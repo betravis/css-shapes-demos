@@ -1,3 +1,6 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700);
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+
 body {
     font-family: 'Source Sans Pro';
     max-width: 40em;
@@ -10,15 +13,19 @@ iframe {
     border: 1px solid #3e454c;
     border-radius: 20px;
 }
+em {
+    font-weight: bold;
+    font-style: normal;
+}
 .page-break { display: none; }
 @media print {
     a { display: none; }
     .page-break {
         display: block;
-        padding: 2.5em;
+        padding: 1.5em;
         page-break-before: always;
     }
     html {
-        margin: 5em;
+        margin: 3em;
     }
 }
