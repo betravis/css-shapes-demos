@@ -33,9 +33,10 @@ line's coordinate system.</p>
 
 <code><pre>
 /**
- * Find the minimum and maximum x values of the opaque pixels in image at
- * a given y. All input and output values should be in the line's coordinate
- * system.
+ * Find the minimum and maximum x values of the opaque
+ * pixels in an image at a given y. All input and output
+ * values should be in the line's coordinate system.
+ * Return null if there are no transparent pixels at y.
  * @param {Image} image
  * @param {Number} y
  * @returns {{ xMin: Number, xMax: Number }|null}
@@ -54,7 +55,7 @@ in the image between the line's minimum and maximum y values.</p>
  * in an image between the line's y values.
  * @param {Image} image
  * @param {{ yMin: Number, yMax: Number }} line
- * @returns {{ xMin: Number, xMax: Number }}
+ * @returns {{ xMin: Number, xMax: Number }|null}
  */
 function findXMinMax(image, line) {
 </pre></code>
@@ -75,8 +76,9 @@ ranging from <code>0</code> to <code>image.width</code>, and y values ranging fr
  * maximum x values of opaque pixels at a given
  * y value in the image.
  * If there are no opaque pixels in that row,
- * the array should contain null.
- * The y value should be the index in the array.
+ * the array should contain null for that y value.
+ * cache[10] should contain the information for the
+ * image pixels at y = 10.
  * @param { Image } image
  * @returns { Array.&lt;{ xMin: Number, xMax: Number }&gt; }
  */
@@ -96,7 +98,7 @@ You may want to rewrite your <code>findXMinMaxAtY</code> method using the cache 
  * @param {Image} image
  * @param { Array.&lt;{ xMin: Number, xMax: Number }&gt;} cache
  * @param {{ yMin: Number, yMax: Number }} line
- * @returns {{ xMin: Number, xMax: Number }}
+ * @returns {{ xMin: Number, xMax: Number }|null}
  */
 function findXMinMax(image, cache, line) {
 </pre></code>
