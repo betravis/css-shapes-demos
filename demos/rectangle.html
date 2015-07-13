@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="../css/demo.css">
+</head>
+<body>
+<script src="../js/jquery-2.1.1.min.js"></script>
+<script src="../js/snap.svg-0.3.0.min.js"></script>
+<script>
+
+function updateDependents() {
+  var x1 = corner1.attr("cx"),
+      y1 = corner1.attr("cy"),
+      x2 = corner2.attr("cx"),
+      y2 = corner2.attr("cy"),
+      bounds = {
+        x: Math.min(x1, x2),
+        y: Math.min(y1, y2),
+        width: Math.abs(x1 - x2),
+        height: Math.abs(y1 - y2)
+      };
+  rectangle.attr(bounds);
+
+  y1 = lineP1.attr("cy");
+  y2 = lineP2.attr("cy");
+  var attr = {
+    x1: 0,
+    x2: width,
+    y1: y1,
+    y2: y1
+  };
+  line1.attr(attr);
+  attr.y1 = attr.y2 = y2;
+  line2.attr(attr);
+
+  var yMin = Math.min(y1, y2),
+      yMax = Math.max(y1, y2);
+
+  if (yMin > bounds.y + bounds.height || yMax < bounds.y) {
+    exclusion.addClass("hidden");
+  } else {
+    exclusion.removeClass("hidden");
+    bounds.y = yMin;
+    bounds.height = yMax - yMin;
+    exclusion.attr(bounds);
+  }
+
+  bounds.y = yMin;
+  bounds.height = yMax - yMin;
+  bounds.x = 0;
+  bounds.width = width;
+  lineBox.attr(bounds);
+}
+
+function handleDrag(dx, dy, x, y, event) {
+  this.attr({ cx: this.oldX + dx, cy: this.oldY + dy });
+  updateDependents();
+}
+
+function handleDragStart(x, y, event) {
+  this.oldX = Number(this.attr("cx"));
+  this.oldY = Number(this.attr("cy"));
+  this.addClass("drag");
+}
+
+function handleDragEnd(x, y, event) {
+  this.removeClass("drag");
+}
+
+function createControlPoint(x, y) {
+  var point = snap.circle(x, y, 7);
+  point.drag(handleDrag, handleDragStart, handleDragEnd);
+  return point;
+}
+
+var width,
+    height,
+    snap,
+    rectangle,
+    corner1,
+    corner2,
+    lineP1,
+    lineP2,
+    line1,
+    line2,
+    exclusion;
+
+function setup() {
+    width = $(window).width();
+    height = $(window).height();
+    if (!width)
+        return;
+    $('svg').remove();
+    snap = Snap(width, height);
+
+    exclusion = snap.rect(0, 0, 10, 10);
+    exclusion.addClass("exclusion");
+
+    lineBox = snap.rect(0, 0, 10, 10);
+    lineBox.addClass("lineBox");
+
+    rectangle = snap.rect(0, 0, 10, 10);
+    rectangle.addClass("shape");
+
+    line1 = snap.line(0, 0, 10, 10);
+    line2 = snap.line(0, 0, 10, 10);
+
+    corner1 = createControlPoint(width / 4, height / 4);
+    corner2 = createControlPoint(width / 4 * 3, height / 4 * 3);
+    lineP1 = createControlPoint(width / 5, height / 5 * 2);
+    lineP2 = createControlPoint(width / 5, height / 5 * 3);
+
+    updateDependents();
+}
+
+setup();
+$(window).resize(setup);
+
+</script>
+</body>
+</html>

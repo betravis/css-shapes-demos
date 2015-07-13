@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../css/demo.css">
+</head>
+<body>
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/snap.svg-0.3.0.min.js"></script>
+    <script src="../js/geometry.js"></script>
+    <script>
+
+function handleDrag(dx, dy, x, y, event) {
+    this.attr({ cx: this.oldX + dx, cy: this.oldY + dy });
+    updateDependents();
+}
+
+function handleDragStart(x, y, event) {
+    this.oldX = Number(this.attr("cx"));
+    this.oldY = Number(this.attr("cy"));
+    this.addClass("dragging");
+}
+
+function handleDragEnd(x, y, event) {
+    this.removeClass("dragging");
+}
+
+function createControlPoint(x, y) {
+    var point = snap.circle(x, y, 7);
+    point.drag(handleDrag, handleDragStart, handleDragEnd);
+    return point;
+}
+
+function removeControlPoint(point) {
+    point.remove();
+    point.undrag();
+}
+
+function pointLocations() {
+    return controlPoints.map(function(point) {
+        return {
+            x: Number(point.attr("cx")),
+            y: Number(point.attr("cy"))
+        };
+    });
+}
+
+function polygonPoints(cx, cy, r, nPoints) {
+    var x, y, result = [], theta = Math.PI * 2 / nPoints;
+    for (var i = 0; i < nPoints; i++) {
+        x = cx + r * Math.cos(i * theta);
+        y = cy + r * Math.sin(i * theta);
+        result.push([x, y]);
+    }
+    return result;
+}
+
+function dblClickHandler(event) {
+    var offset = $('svg').offset(),
+        position = { x: event.x - offset.left, y: event.y - offset.top },
+        points = pointLocations(),
+        i, p1, p2, dist;
+
+    // if you hit a control point, remove it
+    for (i = 0; i < points.length; i++) {
+        p1 = points[i];
+        dist = DistUtils.distanceSquared(position, p1);
+        if (dist < 49) {
+            removeControlPoint(controlPoints[i]);
+            controlPoints.splice(i, 1);
+            updateDependents();
+            return;
+        }
+    }
+
+    // if you are close to a segment, add a control point
+    for (i = 0; i < points.length; i++) {
+        p1 = points[i];
+        p2 = points[(i + 1) % points.length];
+        dist = DistUtils.distanceToSegmentSquared(position, p1, p2);
+        if (dist < 9) {
+            p1 = createControlPoint(event.x, event.y);
+            controlPoints.splice(i + 1, 0, p1);
+            updateDependents();
+            return;
+        }
+    }
+}
+
+function updateDependents() {
+
+    // update shape
+    var dataPoints = controlPoints.map(function(point) {
+        return point.attr("cx") + "," + point.attr("cy");
+    });
+    dataPoints = dataPoints.join(" ");
+    shape.attr({ points: dataPoints });
+
+    // update lines
+    y1 = linePoint1.attr("cy");
+    y2 = linePoint2.attr("cy");
+    var attr = {
+        x1: 0,
+        x2: width,
+        y1: y1,
+        y2: y1
+    };
+    line1.attr(attr);
+    attr.y1 = attr.y2 = y2;
+    line2.attr(attr);
+
+    // update line box
+    var yMin = Math.min(y1, y2),
+        yMax = Math.max(y1, y2),
+        bounds = {
+            x: 0,
+            y: yMin,
+            width: width,
+            height: yMax - yMin
+        };
+    lineBox.attr(bounds);
+
+    // update exclusion decoration
+    var points = pointLocations(),
+        excludeRange = PolygonUtils.intersectBetween(points, yMin, yMax);
+    if (excludeRange) {
+        exclusion.removeClass("hidden");
+        bounds.x = excludeRange.start;
+        bounds.width = excludeRange.end - excludeRange.start;
+        exclusion.attr(bounds);
+    } else {
+        exclusion.addClass("hidden");
+    }
+}
+
+var width,
+    height,
+    snap,
+    shape,
+    linePoint1,
+    linePoint2,
+    line1,
+    line2,
+    lineBox,
+    exclusion,
+    controlPoints;
+
+function setup() {
+    width = $(window).width();
+    height = $(window).height();
+    if (!width)
+        return;
+    $('svg').remove();
+    snap = Snap(width, height);
+
+    snap.dblclick(dblClickHandler);
+
+    exclusion = snap.rect(0, 0, 10, 10);
+    exclusion.addClass("exclusion");
+
+    lineBox = snap.rect(0, 0, 10, 10);
+    lineBox.addClass("lineBox");
+
+    shape = snap.polygon(10, 10, 20, 20, 5, 5);
+    shape.addClass("shape");
+
+    line1 = snap.line(0, 0, 10, 10);
+    line2 = snap.line(0, 0, 10, 10);
+
+    linePoint1 = createControlPoint(width / 5, height / 5 * 2);
+    linePoint2 = createControlPoint(width / 5, height / 5 * 3);
+
+    var points = polygonPoints(width / 2, height / 2, width / 4, 5);
+    controlPoints = points.map(function(point) {
+        return createControlPoint(point[0], point[1]);
+    });
+
+    updateDependents();
+}
+
+setup();
+$(window).resize(setup);
+</script>
+</body>
+</html>

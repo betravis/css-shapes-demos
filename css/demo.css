@@ -1,0 +1,36 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+svg {
+    background-color: #fff; /*#fff6e5;*/
+    position: absolute;
+}
+circle {
+    fill: #7ecefd;
+    transition: fill 0.5s;
+}
+circle:hover {
+    fill: #ff7f66;
+}
+.shape, line {
+    stroke: #3e454c;
+    fill: none;
+}
+.shape:hover {
+    fill: none;
+}
+.exclusion {
+    fill: #3e454c; /*rgb(189, 242, 113);*/
+    opacity: 0.6;
+    transition: opacity 0.5s;
+}
+.lineBox {
+    fill: #2185c5;
+    opacity: 0.2;
+}
+.hidden {
+    opacity: 0;
+}

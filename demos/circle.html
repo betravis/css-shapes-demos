@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="../css/demo.css">
+</head>
+<body>
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/snap.svg-0.3.0.min.js"></script>
+    <script src="../js/geometry.js"></script>
+
+    <script>
+
+function handleDrag(dx, dy, x, y, event) {
+    this.attr({ cx: this.oldX + dx, cy: this.oldY + dy });
+    updateDependents();
+}
+
+function handleDragStart(x, y, event) {
+    this.oldX = Number(this.attr("cx"));
+    this.oldY = Number(this.attr("cy"));
+    this.addClass("drag");
+}
+
+function handleDragEnd(x, y, event) {
+    this.removeClass("drag");
+}
+
+function createControlPoint(x, y) {
+    var point = snap.circle(x, y, 7);
+    point.drag(handleDrag, handleDragStart, handleDragEnd);
+    return point;
+}
+
+function updateDependents() {
+    var x1 = Number(circlePoint1.attr("cx")),
+        y1 = Number(circlePoint1.attr("cy")),
+        x2 = Number(circlePoint2.attr("cx")),
+        y2 = Number(circlePoint2.attr("cy")),
+        cx = x1,
+        cy = y1,
+        r = Math.sqrt(DistUtils.square(y2 - y1) + DistUtils.square(x2 - x1)),
+        attr = {
+            cx: cx,
+            cy: cy,
+            r: r
+        };
+    shape.attr(attr);
+
+    y1 = Number(linePoint1.attr("cy"));
+    y2 = Number(linePoint2.attr("cy"));
+    attr = {
+        x1: 0,
+        x2: width,
+        y1: y1,
+        y2: y1
+    };
+    line1.attr(attr);
+    attr.y1 = attr.y2 = y2;
+    line2.attr(attr);
+
+    var yMin = Math.min(y1, y2),
+        yMax = Math.max(y1, y2),
+        range = CircleUtils.intersectBetween(cx, cy, r, yMin, yMax);
+
+    attr = {
+        x: 0,
+        y: yMin,
+        width: width,
+        height: yMax - yMin
+    };
+    lineBox.attr(attr);
+
+    if (!range) {
+        exclusion.addClass("hidden");
+    } else {
+        exclusion.removeClass("hidden");
+        attr.x = range.start;
+        attr.width = range.end - range.start;
+        exclusion.attr(attr);
+    }
+}
+
+var width,
+    height,
+    snap,
+    shape,
+    circlePoint1,
+    circlePoint2,
+    linePoint1,
+    linePoint2,
+    line1,
+    line2,
+    exclusion,
+    lineBox;
+
+function setup() {
+    width = $(window).width();
+    height = $(window).height();
+    if (!width)
+        return;
+    $('svg').remove();
+    snap = Snap(width, height);
+
+    lineBox = snap.rect(0, 0, 10, 10);
+    lineBox.addClass("lineBox");
+
+    exclusion = snap.rect(0, 0, 10, 10);
+    exclusion.addClass("exclusion");
+
+    shape = snap.circle(0, 0, 10);
+    shape.addClass("shape");
+
+    line1 = snap.line(0, 0, 10, 10);
+    line2 = snap.line(0, 0, 10, 10);
+
+    circlePoint1 = createControlPoint(width / 2, height / 2);
+    circlePoint2 = createControlPoint(width / 2 + width / 4, height / 2);
+    linePoint1 = createControlPoint(width / 5, height / 5 * 2);
+    linePoint2 = createControlPoint(width / 5, height / 5 * 3);
+
+    updateDependents();
+}
+
+setup();
+$(window).resize(setup);
+</script>
+</body>
+</html>

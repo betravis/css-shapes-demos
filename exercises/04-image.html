@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+    <link href="../css/exercise.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1>04 - Image Exclusions</h1>
+    <p>We can also create exclusions using the transparent area of images. In this case,
+    we want to find the minimum and maximum x values for non-transparent pixels within
+    the the y range of a line.</p>
+    <iframe src="../demos/image.html" width="200" height="200"></iframe>
+    <p><a href="../demos/image.html">fullsize sample</a></p>
+    <p>For this problem, you can assume an Image class that you can use as follows:</p>
+    <code><pre>
+var image = new Image("my-image.png");
+var x = image.x;
+var y = image.y;
+var width = image.width;
+var height = image.height;
+// Get alpha as integer between 0, 255 at x, y.
+// An alpha of 0 is fully transparent.
+// An alpha of 255 is fully opaque.
+var alphaAtx10y20 = image.getAlphaAt(10, 20);
+    </pre></code>
+
+<div class="page-break"></div>
+
+<p>Let's start off by finding the minimum and maximum x values of opaque pixels
+in the image between the line's minimum and maximum y values.</p>
+
+<code><pre>
+/**
+ * Find the minimum and maximum x values of opaque pixels
+ * in an image between the line's y values.
+ * @param {Image} image
+ * @param {{ yMin: Number, yMax: Number }} line
+ * @returns {{ xMin: Number, xMax: Number }}
+ */
+function findXMinMax(image, line) {
+</pre></code>
+
+<div class="page-break"></div>
+
+<p>One of the ways we can make our algorithm run faster is to store the minimum
+and maximum x values of opaque pixels for each value of y. Since the image is
+basically just a grid of pixels, we will only have as many entries as the height
+of the image.</p>
+
+<code><pre>
+/**
+ * Generate an array storing the minimum and
+ * maximum x values of opaque pixels at a given
+ * y value in the image.
+ * If there are no opaque pixels in that row,
+ * the array should contain null.
+ * @param { Image } image
+ * @returns { Array.&lt;{ xMin: Number, xMax: Number }&gt; }
+ */
+function generateXMinMaxCache(image) {
+</pre></code>
+
+<div class="page-break"></div>
+
+<p>Finally, use the cache to write a more efficient solution to our original problem.</p>
+
+<code><pre>
+/**
+ * Find the minimum and maximum x values of opaque pixels
+ * in an image between the line's y values.
+ * @param {Image} image
+ * @param { Array.&lt;{ xMin: Number, xMax: Number }&gt;} cache
+ * @param {{ yMin: Number, yMax: Number }} line
+ * @returns {{ xMin: Number, xMax: Number }}
+ */
+function findXMinMax(image, cache, line) {
+</pre></code>
+
+</body>
+</html>

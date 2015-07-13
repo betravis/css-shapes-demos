@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+    <link href="../css/exercise.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1>03 - Polygon Exclusions</h1>
+    <p>Calculate the x intersection range of a polygon and a line.
+    A polygon is defined by a series of points, which are connected by straight segments.</p>
+    <iframe src="../demos/polygon.html" width="200" height="200"></iframe>
+    <p><a href="../demos/polygon.html">fullsize sample</a></p>
+    <p>Let's break this up into some subproblems. First, determine the x intersection range
+    for a single y coordinate. We only need to find the minimum and maximum x values at y.</p>
+<code><pre>
+/**
+ * Return the minimum and maximum x values contained by
+ * the polygon at the given y coordinate.
+ * @param { Array.&lt;{ x: Number, y: Number }&gt; } points
+ * @param { Number } y
+ * @returns {?{ xMin: Number, xMax: Number }}
+ */
+function findXMinMaxAtY(points, y) {
+</pre></code>
+
+<div class="page-break"></div>
+
+<p>Next, determine which y values to intersect the polygon with. You should only
+need to consider some y values when looking for the minimum and maximum x values of the polygon
+between yMin and yMax.</p>
+
+<code><pre>
+/**
+ * Returns an array of the y values to use with
+ * findExclusionRangeAtY when looking for the minimum
+ * and maximum x values within a y range.
+ * @param { Array.&lt;{ x: Number, y: Number}&gt; } points
+ * @param { Number } yMin
+ * @param { Number } yMax
+ * @returns { Array.&lt;Number&gt; }
+ */
+function findYValuesOfInterest(points, yMin, yMax) {
+</pre></code>
+
+<div class="page-break"></div>
+
+<p>Finally, use the previous methods to find the minimum and maximum x values contained
+by the polygon within the line's y range.</p>
+
+<code><pre>
+/**
+ * Return the minimum and maximum x values in a polygon within a line's y range.
+ * Return null if there is no intersection.
+ * @param { Array.&lt;{ x: Number, y: Number}&gt; } points
+ * @param {{
+ *     yMin: Number,
+ *     yMax: Number
+ * }} line
+ * @returns {?{ xMin: Number, xMax: Number }}
+ */
+function findXMinMax(points, line) {
+</pre></code>
+
+</body>
+</html>

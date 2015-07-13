@@ -1,0 +1,24 @@
+body {
+    font-family: 'Source Sans Pro';
+    max-width: 40em;
+    margin: 0 auto;
+}
+pre, code {
+    font-family: 'Source Code Pro';
+}
+iframe {
+    border: 1px solid #3e454c;
+    border-radius: 20px;
+}
+.page-break { display: none; }
+@media print {
+    a { display: none; }
+    .page-break {
+        display: block;
+        padding: 2.5em;
+        page-break-before: always;
+    }
+    html {
+        margin: 5em;
+    }
+}
