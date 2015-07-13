@@ -11,7 +11,7 @@
     the the y range of a line.</p>
     <iframe src="../demos/image.html" width="200" height="200"></iframe>
     <p><a href="../demos/image.html">fullsize sample</a></p>
-    <p>For this problem, you can assume you have access to an Image class that behaves as follows:</p>
+    <p>For this problem, you can assume you have access to an <code>Image</code> class that behaves as follows:</p>
     <code><pre>
 var image = new Image("my-image.png");
 var x = image.x;
@@ -23,7 +23,7 @@ var height = image.height;
 var alphaAtx10y20 = image.isPixelTransparent(10, 20);
     </pre></code>
 
-<p><em>Note:</em> An image pixel coordinate is relative to the image's origin at (<code>image.x</code>, <code>image.y</code>). You can call <code>isPixelTransparent</code> on x values from <code>0</code> to <code>image.width</code>, and y values from <code>0</code> to <code>image.height</code>. If the image is positioned at (10, 20), and you call <code>image.isPixelTransparent(30, 40)</code>, you will be retrieving information at (40, 60) relative to the line's coordinates.</p>
+<p><em>Note:</em> An image pixel coordinate is relative to the image's origin at (<code>image.x</code>, <code>image.y</code>). You can call <code>isPixelTransparent</code> on x values from <code>0</code> to <code>image.width</code>, and y values from <code>0</code> to <code>image.height</code>. If the image is positioned at (10, 20), and you call <code>image.isPixelTransparent(30, 40)</code>, you will be retrieving information at (40, 60) relative to the line's coordinate system.</p>
 
 <div class="page-break"></div>
 
