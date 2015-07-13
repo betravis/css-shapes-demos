@@ -10,8 +10,7 @@
     we want to find the minimum and maximum x values for non-transparent pixels within
     the the y range of a line.</p>
     <iframe src="../demos/image.html" width="200" height="200"></iframe>
-    <p>Image: Little Planet by Alex Pushilin</p>
-    <p><a href="../demos/image.html">fullsize sample</a></p>
+    <p>Image: Little Planet by Alex Pushilin <br/> <a href="../demos/image.html">fullsize sample</a></p>
     <p>For this problem, you can assume you have access to an <code>Image</code> class that behaves as follows:</p>
     <code><pre>
 var image = new Image("my-image.png");
@@ -24,20 +23,21 @@ var height = image.height;
 var alphaAtx10y20 = image.isPixelTransparent(10, 20);
     </pre></code>
 
-<p><em>Note:</em> An image pixel coordinate is relative to the image's origin at (<code>image.x</code>, <code>image.y</code>). You can call <code>isPixelTransparent</code> on x values from <code>0</code> to <code>image.width</code>, and y values from <code>0</code> to <code>image.height</code>. If the image is positioned at (10, 20), and you call <code>image.isPixelTransparent(30, 40)</code>, you will be retrieving information at (40, 60) relative to the line's coordinate system.</p>
+<p><em>Note:</em> The coordinates passed in to <code>image.isPixelTransparent</code> are relative to the image's origin at (<code>image.x</code>, <code>image.y</code>). You can call <code>isPixelTransparent</code> on x values from <code>0</code> to <code>image.width</code>, and y values from <code>0</code> to <code>image.height</code>. In contrast, the line's coordinates are relative to the document's top left.</p>
 
 <div class="page-break"></div>
 
 <p>Let's start off by finding the minimum and maximum x values of an image's
-opaque pixels at a given y. The input y and output x values should be in the
-line's coordinate system.</p>
+opaque pixels at a given y. The input y and output x values should be relative
+to the image's origin.</p>
 
 <code><pre>
 /**
  * Find the minimum and maximum x values of the opaque
- * pixels in an image at a given y. All input and output
- * values should be in the line's coordinate system.
- * Return null if there are no transparent pixels at y.
+ * pixels in an image at a given y. x and y are relative
+ * to the image origin.
+ * Return null if there are no opaque pixels at y, or
+ * if y falls outside the image bounds.
  * @param {Image} image
  * @param {Number} y
  * @returns {{ xMin: Number, xMax: Number }|null}
@@ -47,8 +47,10 @@ function findXMinMaxAtY(image, y) {
 
 <div class="page-break"></div>
 
-<p>Let's start off by finding the minimum and maximum x values of opaque pixels
-in the image between the line's minimum and maximum y values.</p>
+<p>Next, use <code>findXMinMaxAtY</code> to find the minimum and maximum x values
+of opaque pixels between the line's minimum and maximum y values. Keep in mind that
+the line's y values are relative to the document's top left, and the x values returned
+from this method should be as well.</p>
 
 <code><pre>
 /**
@@ -64,20 +66,25 @@ function findXMinMax(image, line) {
 <div class="page-break"></div>
 
 <p>One of the ways we can make our algorithm run faster is to store the minimum
-and maximum x values of opaque pixels in a cache.
-Because we have a fixed number of pixel rows (with values from <code>0</code> to <code>image.height</code>),
-we can store these values in an array.</p>
+and maximum x values of opaque pixels in a cache. This way, we don't have to iterate
+over the image's pixels for each line. Our cache will be an array, with
+the index being the y offset into the image, and each entry being the
+minimum and maximum x offset of the opaque pixels with that y. The
+array should contain null if there are no opaque pixels at that y offset.
 
-<p><em>Note:</em> This function works in the image's coordinate system, with x values
-ranging from <code>0</code> to <code>image.width</code>, and y values ranging from <code>0</code> to <code>image.height</code>.</p>
+<p>Feel free to reuse your original <code>findXMinMaxAtY</code> function.</p>
+
+<p><em>Note:</em> This function uses x and y values relative to the image origin.
+The indices will range from <code>0</code> to <code>image.height</code>, and the entry
+values will range from <code>0</code> to <code>image.width</code>.</p>
 
 <code><pre>
 /**
  * Generate an array storing the minimum and
  * maximum x values of opaque pixels at a given
  * y value in the image.
- * If there are no opaque pixels in that row,
- * the array should contain null for that y value.
+ * If there are no opaque pixels at that y offset,
+ * the array should contain null for that index.
  * cache[10] should contain the information for the
  * image pixels at y = 10.
  * @param { Image } image
@@ -90,7 +97,9 @@ function generateXMinMaxCache(image) {
 
 <p>Finally, use the cache to write a more efficient solution to our original problem.
 You can assume that we have already generated the cache using your <code>generateXMinMaxCache</code> method.
-You may want to rewrite your <code>findXMinMaxAtY</code> method using the cache as well.</p>
+You may want to write a helper method to lookup values in the cache, and translate between coordinates relative to
+the document's origin and those relative to the image's origin. Line coordinates and the returned x values should be
+relative to the document's origin.</p>
 
 <code><pre>
 /**

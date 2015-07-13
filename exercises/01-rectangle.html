@@ -1,11 +1,14 @@
 <!doctype html>
 <html>
 <head>
+    <meta charset="utf-8">
     <link href="../css/exercise.css" rel="stylesheet" type="text/css">
 </head>
 <body>
     <h1>01 - Rectangle Exclusions</h1>
-    <p>Exclusions allow you to define areas for text to wrap around. As one example, you can define a rectangle which text will avoid. In order to layout text this way, you need to calculate the intersection between each line and the rectangle. A line is represented by the minimum and maximum y value for the line. A rectangle is represented by an x, y, width, and height. An intersection is represented by the minimum and maximum x value that is inside both the line and rectangle bounds.</p>
+    <p>Exclusions allow you to define areas for text to wrap around. As one example, you can define a rectangle which text will avoid. In order to layout text this way, we need to determine the area that each line of text must avoid. To do this, we find where each line intersects the rectangle, and what are the minimum and maximum x values of that intersection. This intersection range of x values is the area that text on a line cannot occupy.</p>
+
+    <p>For this exercise, a line will be represented by a minimum and maximum y value. A rectangle will be represented by an x, y, width, and height value. And the result of the intersection will be represented by a minimum and maximum x value.</p>
     <iframe src="../demos/rectangle.html" width="200" height="200"></iframe>
     <p><a href="../demos/rectangle.html">fullsize sample</a></p>
     <p>Given a rectangle and a line, find the minimum and maximum x values that are inside both the rectangle and the line.</p>
