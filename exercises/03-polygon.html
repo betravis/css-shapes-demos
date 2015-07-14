@@ -6,39 +6,40 @@
 </head>
 <body>
     <h1>03 - Polygon Exclusions</h1>
-    <p>Calculate the x intersection range of a polygon and a line.
-    A polygon is defined by a series of points (x, y pairs), which are connected by straight segments. You can think of each segment as a pair of consecutive points.</p>
+    <p>A polygon is defined by a series of points (x, y pairs). Each of these points is connected by a line segment to the next in the series, with the final point connecting back to the first. For this problem, we will be determining the minimum and maximum x values within the intersection between a line and a polygon.</p>
     <iframe src="../demos/polygon.html" width="200" height="200"></iframe>
     <p><a href="../demos/polygon.html">fullsize sample</a></p>
 
-    <p>For this exercise, you can assume you have access to a function for finding the minimum and maximum x intercept values for a given segment and y value (see below).</p>
+    <p>You can assume you have access to a function for finding the minimum and maximum x values where a line intersects a polygon segment. The min and max values may be the same if the line intersects the segment only once. However, for horizontal lines you may get two different values.</p>
 
 <code><pre>
 /**
- * Returns the minimum and maximum x intercepts of a
- * segment with a horizontal line at y.
+ * Returns the minimum and maximum x values where a line
+ * intersects a polygon segment.
  * If there is no intersection, this will be null.
  * For horizontal segments at y, this will be the minimum
  * and maximum x values of the segment.
  * Otherwise, this will be the x intercept of the horizontal
- * y line and segment.
+ * y line and segment, and min and max will be the same.
  * @param {{ x: Number, y: Number}} point1 segment start
  * @param {{ x: Number, y: Number}} point2 segment end
  * @param {Number} y
  * @returns {{ xMin: Number, xMax: Number }|null}
  */
- function findSegmentXIntercepts(point1, pointy, y);
+ function findSegmentXMinMaxAtY(point1, pointy, y);
 </code></pre>
 
     <div class="page-break"></div>
 
-<p>Let's break this up into some subproblems. First, determine the x intersection range
-for a single y coordinate. We only need to find the minimum and maximum x values at y.</p>
+<p>Let's break this up into subproblems. First, determine the x range
+for the intersection with a single y coordinate.
+We only need to find the minimum and maximum x values at y.</p>
 
 <code><pre>
 /**
  * Return the minimum and maximum x values contained by
  * the polygon at the given y coordinate.
+ * Return null if there is no intersection.
  * @param { Array.&lt;{ x: Number, y: Number }&gt; } points
  * @param { Number } y
  * @returns {{ xMin: Number, xMax: Number }|null}
@@ -48,21 +49,18 @@ function findXMinMaxAtY(points, y) {
 
 <div class="page-break"></div>
 
-<p>Next, determine which y values to intersect the polygon with. You should only
-need to consider some y values when looking for the minimum and maximum x values of the polygon
-between yMin and yMax.</p>
+<p>Next, we also need to consider any local x extrema within the line's y range.
+These local extrema will be at the points located within the line.</p>
 
 <code><pre>
 /**
- * Returns an array of the y values to use with
- * findExclusionRangeAtY when looking for the minimum
- * and maximum x values within a y range.
+ * Return a list of the local extrema x values within
+ * a line's bounds.
  * @param { Array.&lt;{ x: Number, y: Number}&gt; } points
- * @param { Number } yMin
- * @param { Number } yMax
+ * @param {{ yMin: Number, yMax: Number }} line
  * @returns { Array.&lt;Number&gt; }
  */
-function findYValuesOfInterest(points, yMin, yMax) {
+function findLocalXExtrema(points, yMin, yMax) {
 </pre></code>
 
 <div class="page-break"></div>
