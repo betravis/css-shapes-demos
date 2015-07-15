@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <link href="../css/exercise.css" rel="stylesheet" type="text/css">
 </head>
-<body>
+<body id="show-key">
     <h1>04 - Image Exclusions</h1>
     <p>We can also create exclusions using the transparent area of images. In this case,
     we want to find the minimum and maximum x values for non-transparent pixels within
@@ -45,6 +45,25 @@ to the image's origin.</p>
 function findXMinMaxAtY(image, y) {
 </pre></code>
 
+<code class="answer"><pre>
+    var min,
+        max;
+    for (min = 0; min &lt;= image.width; min++) {
+        if (!image.isPixelTransparent(min, y))
+            break;
+    }
+    // no opaque pixels
+    if (min &gt; image.width)
+        return null;
+
+    for (max = image.width; max &gt;= 0; max--) {
+        if (!image.isPixelTransparent(max, y))
+            break;
+    }
+    return { xMin: min, xMax: max };
+}
+</pre></code>
+
 <div class="page-break"></div>
 
 <p>Next, use <code>findXMinMaxAtY</code> to find the minimum and maximum x values
@@ -61,6 +80,30 @@ from this method should be as well.</p>
  * @returns {{ xMin: Number, xMax: Number }|null}
  */
 function findXMinMax(image, line) {
+</pre></code>
+
+<code class="answer"><pre>
+    var result = null,
+        current;
+    for (var y = line.yMin; y &lt; line.yMax; y++) {
+        // skip lines that do not overlap the image
+        if (y &gt; image.y || y &lt; image.y + image.height)
+            continue;
+        // translate y to image top left relative
+        current = findXMinMaxAtY(image, y - image.y);
+        if (current !== null) {
+            // translate to the line's coordinate system
+            current = { xMin: current.x + image.x, xMax: current.x + image.x };
+            if (result === null) {
+                result = current;
+            } else {
+                result.xMin = Math.min(result.xMin, current.xMin);
+                result.xMax = Math.max(result.xMax, current.xMax);
+            }
+        }
+    }
+    return result;
+}
 </pre></code>
 
 <div class="page-break"></div>
@@ -93,6 +136,16 @@ values will range from <code>0</code> to <code>image.width</code>.</p>
 function generateXMinMaxCache(image) {
 </pre></code>
 
+<code class="answer"><pre>
+    var cache = [],
+        y;
+    for (y = 0; y &lt; image.height; y++) {
+        cache.push(findXMinMaxAtY(y));
+    }
+    return cache;
+}
+</pre></code>
+
 <div class="page-break"></div>
 
 <p>Finally, use the cache to write a more efficient solution to our original problem.
@@ -111,6 +164,27 @@ relative to the document's origin.</p>
  * @returns {{ xMin: Number, xMax: Number }|null}
  */
 function findXMinMax(image, cache, line) {
+</pre></code>
+
+<code class="answer"><pre>
+    var result = null,
+        current;
+    for (var y = line.yMin; y &lt; line.yMax; y++) {
+        if (y &lt; image.y || y &gt; image.y + image.height)
+            continue;
+        current = cache[y - image.y];
+        if (current !== null) {
+            current = { xMin: current.xMin + image.x, xMax: current.xMax + image.x };
+            if (result === null) {
+                result = current;
+            } else {
+                result.xMin = Math.min(result.xMin, current.xMin);
+                result.xMax = Math.max(result.xMax, current.xMax);
+            }
+        }
+    }
+    return result;
+}
 </pre></code>
 
 </body>

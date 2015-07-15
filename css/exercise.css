@@ -29,3 +29,11 @@ em {
         margin: 3em;
     }
 }
+
+.answer {
+    display: none;
+}
+
+#show-key:target .answer {
+    display: block;
+}

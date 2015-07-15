@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <link href="../css/exercise.css" rel="stylesheet" type="text/css">
 </head>
-<body>
+<body id="show-key">
     <h1>03 - Polygon Exclusions</h1>
     <p>A polygon is defined by a series of points (x, y pairs). Each of these points is connected by a line segment to the next in the series, with the final point connecting back to the first. For this problem, we will be determining the minimum and maximum x values within the intersection between a line and a polygon.</p>
     <iframe src="../demos/polygon.html" width="200" height="200"></iframe>
@@ -47,6 +47,31 @@ We only need to find the minimum and maximum x values at y.</p>
 function findXMinMaxAtY(points, y) {
 </pre></code>
 
+<code class="answer"><pre>
+    var result = null,
+        current,
+        p1,
+        p2;
+    for (var i = 0; i &lt; points.length; i++) {
+        p1 = points[i];
+        // the last point should connect back to the first
+        p2 = points[(i + 1) % points.length];
+        current = findSegmentXMinMaxAtY(p1, p2, y);
+        if (current !== null) {
+            if (result === null) {
+                // there is no existing min/max
+                result = current;
+            } else {
+                // compare to the existing min/max
+                result.xMin = Math.min(result.xMin, current.xMin);
+                result.xMax = Math.max(result.xMax, current.xMax);
+            }
+        }
+    }
+    return result;
+}
+</pre></code>
+
 <div class="page-break"></div>
 
 <p>Next, we also need to consider any local x extrema within the line's y range.
@@ -61,6 +86,16 @@ These local extrema will be at the points located within the line.</p>
  * @returns { Array.&lt;Number&gt; }
  */
 function findLocalXExtrema(points, yMin, yMax) {
+</pre></code>
+
+<code class="answer"><pre>
+    var result = [];
+    for (var i = 0; i &lt; points.length; i++) {
+        if (points[i].y &gt; yMin &amp;&amp; points[i].y &lt; yMax)
+            result.push(points[i].x);
+    }
+    return result;
+}
 </pre></code>
 
 <div class="page-break"></div>
@@ -81,6 +116,34 @@ by the polygon within the line's y range.</p>
  * @returns {{ xMin: Number, xMax: Number }|null}
  */
 function findXMinMax(points, line) {
+</pre></code>
+
+<code class="answer"><pre>
+    var lineTopXMinMax = findXMinMaxAtY(points, line.yMin),
+        lineBottomXMinMax = findXMinMaxAtY(points, line.yMax),
+        localXMinMaxes = findLocalXExtrema(points, line.yMin, line.yMax);
+    
+    // put all of the x values into a single array
+    var xValues = localXMinMaxes;
+    if (lineTopXMinMax !== null)
+        xValues.push(lineTopXMinMax.xMin, lineTopXMinMax.xMax);
+    if (lineBottomXMinMax !== null)
+        xValues.push(lineBottomXMinMax.xMin, lineBottomXMinMax.xMax);
+
+    if (xValues.length &lt; 1)
+        return null;
+
+    var min = xValues[0],
+        max = xValues[0];
+    for (var i = 1; i &lt; xValues.length; i++) {
+        if (xValues[i] &lt; min)
+            min = xValues[i];
+        if (xValues[i] &gt; max)
+            max = xValues[i];
+    }
+
+    return { xMin: min, xMax: max };
+}
 </pre></code>
 
 </body>

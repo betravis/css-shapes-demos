@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <link href="../css/exercise.css" rel="stylesheet" type="text/css">
 </head>
-<body>
+<body id="show-key">
     <h1>02 - Circle Exclusions</h1>
     <p>We can also define exclusions using circles. For this problem, you will need to determine the minimum and maximum x values within the intersection of a line and circle.</p>
     <iframe src="../demos/circle.html" width="200" height="200"></iframe>
@@ -27,6 +27,36 @@
  * @returns {{ xMin: Number, xMax: Number }|null}
  */
 function findXMinMax(circle, line) {
+</pre></code>
+
+<code class="answer"><pre>
+    var yMin = circle.cy - circle.r,
+        yMax = circle.cy + circle.r;
+    if (line.yMax &lt; yMin)
+        return null;
+    if (line.yMin &gt; yMax)
+        return null;
+
+    // If the line is entirely above cy,
+    // the maximum x values will be at line.yMax.
+    // If the line is entirely below cy,
+    // the maximum x values will be at line.yMin.
+    // Otherwise, the line spans cy and the
+    // the maximum x values will be there.
+    var y;
+    if (line.yMax &lt; circle.cy)
+        y = line.yMax;
+    else if (line.yMin &gt; circle.cy)
+        y = line.yMin;
+    else
+        y = circle.cy;
+
+    // Use the fact that dx * dx + dy * dy = circle.r * circle.r,
+    // where dx and dy are the distances from cx, cy.
+    var dy = y - circle.cy,
+        dx = Math.sqrt(circle.r * circle.r - dy * dy);
+    return { xMin: circle.x - dx, xMax: circle.x + dx };
+}
 </pre></code>
 
 </body>

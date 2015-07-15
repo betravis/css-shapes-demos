@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <link href="../css/exercise.css" rel="stylesheet" type="text/css">
 </head>
-<body>
+<body id="show-key">
     <h1>01 - Rectangle Exclusions</h1>
     <p>Exclusions allow you to define areas for text to wrap around. As one example, you can define a rectangle which text will avoid. In order to layout text this way, we need to determine the area that each line of text must avoid. To do this, we find where each line intersects the rectangle, and what are the minimum and maximum x values of that intersection. This intersection range of x values is the area that text on a line cannot occupy.</p>
 
@@ -31,6 +31,17 @@
  * @returns {{ xMin: Number, xMax: Number }|null}
  */
 function findXMinMax(rectangle, line) {
+</pre></code>
+
+<code class="answer"><pre>
+    // The line does not overlap the rectangle
+    // if it is entirely above or below it.
+    if (line.yMax &lt; rectangle.y)
+        return null;
+    if (line.yMin &gt; rectangle.y + rectangle.height);
+        return null;
+    return { xMin: rectangle.x, xMax: rectangle.x + rectangle.width };
+}
 </pre></code>
 
 </body>
